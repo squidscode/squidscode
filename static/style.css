@@ -1,0 +1,142 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg: #fafafa;
+    --text: #1a1a1a;
+    --muted: #666;
+    --accent: #333;
+    --border: #e0e0e0;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #111;
+        --text: #f0f0f0;
+        --muted: #999;
+        --accent: #ccc;
+        --border: #333;
+    }
+}
+
+html {
+    font-size: 18px;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+main {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+}
+
+header {
+    margin-bottom: 4rem;
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem;
+}
+
+.tagline {
+    color: var(--muted);
+    font-size: 1.1rem;
+}
+
+h2 {
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 1rem;
+}
+
+section {
+    margin-bottom: 3rem;
+}
+
+.about p {
+    max-width: 45ch;
+}
+
+.projects ul {
+    list-style: none;
+}
+
+.projects li {
+    border-bottom: 1px solid var(--border);
+}
+
+.projects li:first-child {
+    border-top: 1px solid var(--border);
+}
+
+.projects a {
+    display: block;
+    padding: 1rem 0;
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 0.2s;
+}
+
+.projects a:hover {
+    opacity: 0.7;
+}
+
+.projects strong {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.projects span {
+    display: block;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.projects em {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-style: normal;
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.contact a {
+    color: var(--text);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    transition: border-color 0.2s;
+}
+
+.contact a:hover {
+    border-color: var(--text);
+}
+
+footer {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+}
+
+footer p {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
