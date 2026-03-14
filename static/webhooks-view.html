@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webhook {id} | Sid Mane</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .endpoint-box {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border: 1px solid var(--border);
+            padding: 0.75rem 1rem;
+            margin-bottom: 2rem;
+            font-family: monospace;
+            font-size: 0.85rem;
+            word-break: break-all;
+        }
+        .endpoint-url { flex: 1; color: var(--text); }
+        .copy-btn {
+            padding: 0.3rem 0.9rem;
+            background: var(--text);
+            color: var(--bg);
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-family: inherit;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .copy-btn:hover { opacity: 0.7; }
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+        .dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--muted);
+            margin-right: 0.4rem;
+            vertical-align: middle;
+        }
+        .dot.live { background: #4caf50; }
+        .requests { display: flex; flex-direction: column; gap: 1rem; }
+        .request {
+            border: 1px solid var(--border);
+            font-size: 0.82rem;
+        }
+        .request-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg);
+            cursor: pointer;
+            user-select: none;
+        }
+        .request-header:hover { opacity: 0.8; }
+        .method {
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        .request-time { color: var(--muted); margin-left: auto; }
+        .request-body { padding: 0.75rem; display: none; }
+        .request-body.open { display: block; }
+        .section-label {
+            font-size: 0.72rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.4rem;
+        }
+        .headers-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: monospace;
+            font-size: 0.78rem;
+            margin-bottom: 0.75rem;
+        }
+        .headers-table td { padding: 0.15rem 0.4rem 0.15rem 0; vertical-align: top; }
+        .headers-table td:first-child { color: var(--muted); white-space: nowrap; padding-right: 1rem; }
+        .body-pre {
+            border: 1px solid var(--border);
+            padding: 0.6rem;
+            font-family: monospace;
+            font-size: 0.78rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+            line-height: 1.5;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 0;
+        }
+        .empty { color: var(--muted); font-size: 0.9rem; }
+        .back {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .back:hover { border-color: var(--text); color: var(--text); }
+        .docs { margin-top: 2.5rem; border-top: 1px solid var(--border); padding-top: 1.5rem; }
+        .docs h2 { font-size: 0.95rem; margin-bottom: 1.25rem; }
+        .curl-block { margin-bottom: 1.25rem; }
+        .curl-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.3rem; }
+        .curl-cmd {
+            display: block; border: 1px solid var(--border); padding: 0.6rem 0.75rem;
+            font-family: monospace; font-size: 0.78rem; white-space: pre; overflow-x: auto;
+            line-height: 1.5; margin: 0; cursor: pointer; background: transparent; color: var(--text);
+        }
+        .curl-cmd:hover { border-color: var(--accent); }
+    </style>
+</head>
+<body>
+    <main>
+        <a href="/" class="back">← home</a>
+        <header>
+            <h1>Webhook</h1>
+        </header>
+        <div class="endpoint-box">
+            <span class="endpoint-url" id="endpoint-url"></span>
+            <button class="copy-btn" onclick="copyUrl()">Copy</button>
+        </div>
+        <div class="status-bar">
+            <span><span class="dot live" id="status-dot"></span><span id="status-text">Listening</span></span>
+            <span id="request-count">0 requests</span>
+        </div>
+        <div class="requests" id="requests">
+            <p class="empty">Waiting for requests...</p>
+        </div>
+        <section class="docs">
+            <h2>curl</h2>
+            <div class="curl-block">
+                <div class="curl-label">Send a GET request</div>
+                <pre class="curl-cmd" id="curl-get"></pre>
+            </div>
+            <div class="curl-block">
+                <div class="curl-label">Send a POST request with JSON</div>
+                <pre class="curl-cmd" id="curl-post-json"></pre>
+            </div>
+            <div class="curl-block">
+                <div class="curl-label">Send a POST request with form data</div>
+                <pre class="curl-cmd" id="curl-post-form"></pre>
+            </div>
+        </section>
+    </main>
+    <script>
+        const id = '{id}';
+        const receiveUrl = location.origin + '/webhooks/' + id + '/receive';
+        document.getElementById('endpoint-url').textContent = receiveUrl;
+
+        document.getElementById('curl-get').textContent = `curl ${receiveUrl}`;
+        document.getElementById('curl-post-json').textContent =
+            `curl -X POST ${receiveUrl} \\\n  -H "Content-Type: application/json" \\\n  -d '{"event": "test"}'`;
+        document.getElementById('curl-post-form').textContent =
+            `curl -X POST ${receiveUrl} \\\n  -d "key=value"`;
+        document.querySelectorAll('.curl-cmd').forEach(el => {
+            el.addEventListener('click', () => navigator.clipboard.writeText(el.textContent));
+        });
+
+        function copyUrl() {
+            navigator.clipboard.writeText(receiveUrl);
+        }
+
+        function escape(s) {
+            return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
+
+        function formatTime(ts) {
+            return new Date(ts * 1000).toLocaleString();
+        }
+
+        function methodColor(m) {
+            return { GET:'#61affe', POST:'#49cc90', PUT:'#fca130', DELETE:'#f93e3e',
+                     PATCH:'#50e3c2', HEAD:'#9012fe', OPTIONS:'#0d5aa7' }[m] || 'var(--muted)';
+        }
+
+        let rendered = 0;
+
+        function render(requests) {
+            const el = document.getElementById('requests');
+            const count = document.getElementById('request-count');
+            count.textContent = requests.length + ' request' + (requests.length === 1 ? '' : 's');
+
+            if (requests.length === 0) {
+                el.innerHTML = '<p class="empty">Waiting for requests...</p>';
+                rendered = 0;
+                return;
+            }
+
+            // Prepend any new requests (they arrive in order, newest last from server)
+            const newRequests = requests.slice(rendered);
+            for (const req of newRequests.reverse()) {
+                const div = document.createElement('div');
+                div.className = 'request';
+
+                const headersHtml = req.headers.map(([k, v]) =>
+                    `<tr><td>${escape(k)}</td><td>${escape(v)}</td></tr>`
+                ).join('');
+
+                const bodyHtml = req.body
+                    ? `<div class="section-label">Body</div><pre class="body-pre">${escape(req.body)}</pre>`
+                    : '';
+
+                div.innerHTML = `
+                    <div class="request-header" onclick="this.nextElementSibling.classList.toggle('open')">
+                        <span class="method" style="color:${methodColor(req.method)}">${escape(req.method)}</span>
+                        <span class="request-time">${formatTime(req.received_at)}</span>
+                    </div>
+                    <div class="request-body">
+                        <div class="section-label">Headers</div>
+                        <table class="headers-table"><tbody>${headersHtml}</tbody></table>
+                        ${bodyHtml}
+                    </div>`;
+
+                if (rendered === 0) {
+                    el.innerHTML = '';
+                }
+                el.prepend(div);
+            }
+            rendered = requests.length;
+        }
+
+        async function poll() {
+            try {
+                const res = await fetch('/webhooks/' + id + '/requests');
+                if (res.ok) {
+                    render(await res.json());
+                    document.getElementById('status-dot').classList.add('live');
+                    document.getElementById('status-text').textContent = 'Listening';
+                }
+            } catch {
+                document.getElementById('status-dot').classList.remove('live');
+                document.getElementById('status-text').textContent = 'Reconnecting...';
+            }
+        }
+
+        poll();
+        setInterval(poll, 3000);
+    </script>
+</body>
+</html>

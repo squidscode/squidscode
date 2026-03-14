@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{filename} | Sid Mane</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .meta {
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: var(--muted);
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            margin-bottom: 1.5rem;
+        }
+        .actions { display: flex; gap: 0.75rem; margin-top: 1rem; }
+        .btn {
+            padding: 0.5rem 1.5rem;
+            background: var(--text);
+            color: var(--bg);
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-family: inherit;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover { opacity: 0.7; }
+        .back {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .back:hover { border-color: var(--text); color: var(--text); }
+        .docs { margin-top: 2.5rem; border-top: 1px solid var(--border); padding-top: 1.5rem; }
+        .docs h2 { font-size: 0.95rem; margin-bottom: 1.25rem; }
+        .curl-block { margin-bottom: 1.25rem; }
+        .curl-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.3rem; }
+        .curl-cmd {
+            display: block; border: 1px solid var(--border); padding: 0.6rem 0.75rem;
+            font-family: monospace; font-size: 0.78rem; white-space: pre; overflow-x: auto;
+            line-height: 1.5; margin: 0; cursor: pointer; background: transparent; color: var(--text);
+        }
+        .curl-cmd:hover { border-color: var(--accent); }
+    </style>
+</head>
+<body>
+    <main>
+        <a href="/" class="back">← home</a>
+        <header>
+            <h1>{filename}</h1>
+        </header>
+        <div class="meta">
+            <span>{content_type}</span>
+            <span>{size}</span>
+        </div>
+        <div class="actions">
+            <a href="/files/{id}/raw" class="btn">Download</a>
+            <a href="/files" class="btn">Upload another</a>
+        </div>
+        <section class="docs">
+            <h2>curl</h2>
+            <div class="curl-block">
+                <div class="curl-label">Download</div>
+                <pre class="curl-cmd" id="curl-download"></pre>
+            </div>
+            <div class="curl-block">
+                <div class="curl-label">Download with rate limit (KB/s)</div>
+                <pre class="curl-cmd" id="curl-rate"></pre>
+            </div>
+            <div class="curl-block">
+                <div class="curl-label">Download over a specific duration (seconds)</div>
+                <pre class="curl-cmd" id="curl-duration"></pre>
+            </div>
+        </section>
+    </main>
+    <script>
+        const base = location.origin + '/files/{id}/raw';
+        document.getElementById('curl-download').textContent = `curl ${base} -o "{filename}"`;
+        document.getElementById('curl-rate').textContent    = `curl "${base}?rate=100" -o "{filename}"`;
+        document.getElementById('curl-duration').textContent = `curl "${base}?duration=30" -o "{filename}"`;
+        document.querySelectorAll('.curl-cmd').forEach(el => {
+            el.addEventListener('click', () => navigator.clipboard.writeText(el.textContent));
+        });
+    </script>
+</body>
+</html>

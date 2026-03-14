@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pastebin | Sid Mane</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        textarea {
+            width: 100%;
+            min-height: 380px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            resize: vertical;
+            line-height: 1.5;
+            outline: none;
+        }
+        textarea:focus { border-color: var(--accent); }
+        button {
+            margin-top: 1rem;
+            padding: 0.5rem 1.5rem;
+            background: var(--text);
+            color: var(--bg);
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-family: inherit;
+        }
+        button:hover { opacity: 0.7; }
+        .back {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .back:hover { border-color: var(--text); color: var(--text); }
+        .docs { margin-top: 2.5rem; border-top: 1px solid var(--border); padding-top: 1.5rem; }
+        .docs h2 { font-size: 0.95rem; margin-bottom: 1.25rem; }
+        .curl-block { margin-bottom: 1.25rem; }
+        .curl-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.3rem; }
+        .curl-cmd {
+            display: block; border: 1px solid var(--border); padding: 0.6rem 0.75rem;
+            font-family: monospace; font-size: 0.78rem; white-space: pre; overflow-x: auto;
+            line-height: 1.5; margin: 0; cursor: pointer; background: transparent; color: var(--text);
+        }
+        .curl-cmd:hover { border-color: var(--accent); }
+    </style>
+</head>
+<body>
+    <main>
+        <a href="/" class="back">← home</a>
+        <header>
+            <h1>Pastebin</h1>
+            <p class="tagline">Paste code, get a link.</p>
+        </header>
+        <form method="post" action="/pastebin">
+            <textarea name="content" placeholder="Paste your code here..." autofocus></textarea>
+            <br>
+            <button type="submit">Create Paste</button>
+        </form>
+        <section class="docs">
+            <h2>Usage</h2>
+            <div class="curl-block">
+                <div class="curl-label">Create a paste from inline text</div>
+                <pre class="curl-cmd">curl -X POST {origin}/pastebin \
+  --data-urlencode "content=Hello, world!"</pre>
+            </div>
+            <div class="curl-block">
+                <div class="curl-label">Create a paste from a file</div>
+                <pre class="curl-cmd">curl -X POST {origin}/pastebin \
+  --data-urlencode "content@script.py"</pre>
+            </div>
+        </section>
+    </main>
+    <script>
+        document.querySelectorAll('.curl-cmd').forEach(el => {
+            el.textContent = el.textContent.replace(/\{origin\}/g, location.origin);
+            el.addEventListener('click', () => navigator.clipboard.writeText(el.textContent));
+        });
+    </script>
+</body>
+</html>

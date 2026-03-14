@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paste {id} | Sid Mane</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <link rel="stylesheet" media="(prefers-color-scheme: dark)" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        pre {
+            border: 1px solid var(--border);
+            padding: 1rem;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        code { font-family: monospace; }
+        .hljs { background: transparent; }
+        .paste-id {
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-bottom: 1rem;
+        }
+        .actions { display: flex; gap: 0.75rem; margin-top: 1rem; }
+        .btn {
+            padding: 0.5rem 1.5rem;
+            background: var(--text);
+            color: var(--bg);
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-family: inherit;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover { opacity: 0.7; }
+        .back {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .back:hover { border-color: var(--text); color: var(--text); }
+    </style>
+</head>
+<body>
+    <main>
+        <a href="/" class="back">← home</a>
+        <header>
+            <h1>Paste</h1>
+            <p class="paste-id">{id}</p>
+        </header>
+        <pre><code>{escaped}</code></pre>
+        <div class="actions">
+            <button class="btn" onclick="navigator.clipboard.writeText(document.querySelector('code').textContent)">Copy</button>
+            <a href="/pastebin" class="btn">New Paste</a>
+        </div>
+    </main>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
